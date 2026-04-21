@@ -1,18 +1,22 @@
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],
+module.exports = {
+  content: [
+    './app/**/*.{js,jsx,ts,tsx}',
+    './components/**/*.{js,jsx,ts,tsx}',
+    './data/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     extend: {
       fontFamily: {
         sans: [
-          'Inter',
+          'var(--font-inter)',
           'ui-sans-serif',
           'system-ui',
           '-apple-system',
           'Segoe UI',
           'sans-serif',
         ],
-        display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+        display: ['var(--font-space-grotesk)', 'var(--font-inter)', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       colors: {
@@ -33,8 +37,6 @@ export default {
       backgroundImage: {
         'radial-fade':
           'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.25), transparent)',
-        'grid-fade':
-          'linear-gradient(to bottom, transparent, rgba(5,6,10,0.9)), url("data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22><path fill=%22none%22 stroke=%22%23222738%22 stroke-width=%220.5%22 d=%22M0 0h40v40H0z%22/></svg>")',
       },
       boxShadow: {
         glow: '0 0 0 1px rgba(255,255,255,0.06), 0 20px 60px -20px rgba(139,92,246,0.4)',
