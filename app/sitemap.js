@@ -1,6 +1,8 @@
 import { SITE } from '@/lib/seo'
 import { getAllPosts } from '@/data/posts'
 
+export const dynamic = 'force-static'
+
 export default function sitemap() {
   const now = new Date().toISOString()
 

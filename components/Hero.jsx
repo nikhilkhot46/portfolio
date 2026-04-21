@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import Link from '@/components/Link'
 import { useInView, useMotionValue, animate } from 'framer-motion'
 import { ArrowRight, Briefcase, Clock, Download, Github, Globe, Linkedin, Mail, MapPin, Sparkles } from 'lucide-react'
 import AuroraBackground from './ui/AuroraBackground'

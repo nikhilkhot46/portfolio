@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/Link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Calendar, Clock, Tag } from 'lucide-react'
 import Breadcrumbs from '@/components/Breadcrumbs'
