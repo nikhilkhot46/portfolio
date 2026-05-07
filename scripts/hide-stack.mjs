@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const OUT = path.resolve(__dirname, '..', 'out')
 const FROM = '_next'
-const TO = 'static'
+const TO = 'assets'
 
 const TEXT_EXTS = new Set([
   '.html', '.htm', '.js', '.mjs', '.css',
@@ -57,18 +57,46 @@ async function renameNextDir() {
   console.log(`[hide-stack] copied out/${FROM}/ → out/${TO}/`)
 }
 
+const REWRITES = [
+  [`/${FROM}/`, `/${TO}/`],
+  [`__next_f`, `__app_f`],
+]
+
 async function rewriteReferences() {
   const files = await walk(OUT)
   let changed = 0
   for (const f of files) {
     const ext = path.extname(f).toLowerCase()
     if (!TEXT_EXTS.has(ext)) continue
-    const buf = await fs.readFile(f, 'utf8')
-    if (!buf.includes(`/${FROM}/`)) continue
-    await fs.writeFile(f, buf.replaceAll(`/${FROM}/`, `/${TO}/`))
-    changed++
+    let buf = await fs.readFile(f, 'utf8')
+    const original = buf
+    for (const [from, to] of REWRITES) {
+      buf = buf.replaceAll(from, to)
+    }
+    if (buf !== original) {
+      await fs.writeFile(f, buf)
+      changed++
+    }
   }
-  console.log(`[hide-stack] rewrote /${FROM}/ → /${TO}/ in ${changed} files`)
+  console.log(`[hide-stack] rewrote identifiers in ${changed} files`)
+}
+
+async function scrubNextFingerprints() {
+  const files = await walk(OUT)
+  let changed = 0
+  for (const f of files) {
+    if (path.extname(f).toLowerCase() !== '.html') continue
+    const src = await fs.readFile(f, 'utf8')
+    const out = src
+      .replace(/<script id="__NEXT_DATA__"[^>]*>[\s\S]*?<\/script>/g, '')
+      .replace(/<meta name="next-head-count"[^>]*\/?>/g, '')
+      .replace(/<meta name="next-size-adjust"[^>]*\/?>/g, '')
+    if (out !== src) {
+      await fs.writeFile(f, out)
+      changed++
+    }
+  }
+  console.log(`[hide-stack] scrubbed __NEXT_DATA__ / next-head-count from ${changed} HTML file(s)`)
 }
 
 async function pruneRscArtifacts(dir) {
@@ -111,6 +139,7 @@ async function pruneRscArtifacts(dir) {
 async function main() {
   await renameNextDir()
   await rewriteReferences()
+  await scrubNextFingerprints()
   const removed = await pruneRscArtifacts(OUT)
   console.log(`[hide-stack] pruned ${removed} RSC artifact(s)`)
 }
