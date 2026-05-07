@@ -1,7 +1,8 @@
 node_modules
+.next
+out
+build
 dist
-dist-ssr
-.vite
 *.local
 .env
 .env.*
@@ -12,3 +13,4 @@ Thumbs.db
 .idea
 .claude
 nginx.conf
+next-env.d.ts
