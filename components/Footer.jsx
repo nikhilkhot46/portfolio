@@ -57,7 +57,7 @@ export default function Footer() {
 
       <div className="mt-10 flex flex-col items-center justify-between gap-3 text-xs text-white/40 sm:flex-row">
         <span>© {new Date().getFullYear()} {profile.name}. All rights reserved.</span>
-        <span>Built with Next.js · Deployed on the edge.</span>
+        {/* <span>Built with Next.js · Deployed on the edge.</span> */}
       </div>
     </footer>
   )

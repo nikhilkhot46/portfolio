@@ -60,14 +60,11 @@ export default function Hero() {
             <span className="gradient-brand animate-gradient-pan bg-[length:200%_200%]">
               Nikhil.
             </span>
-            <span className="block text-white/70">I build web applications.</span>
+            <span className="block text-xl leading-snug text-white/70 sm:text-2xl md:text-3xl lg:text-[2.5rem]">Senior Full Stack Engineer<br />building scalable healthcare and enterprise platforms.</span>
           </h1>
 
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/65 sm:text-xl">
-            Full Stack Developer based in Pune, India.{' '}
-            <span className="text-white/90">{profile.years} years</span> working on web apps,
-            mostly with PHP, Node.js, Angular, and MySQL. Currently leading a team of 5 at
-            Spring Computing Technologies on a telehealth product.
+            <span className="text-white/90">{profile.years} years </span> in, I still write code every day — and lead a team doing the same. Most of that time has been in healthcare: HIPAA-regulated APIs, telehealth products, backend work where slow or broken simply isn&apos;t an option. Based in Pune, available for the right full-time role or a well-scoped contract.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-2 text-xs">
