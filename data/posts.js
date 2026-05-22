@@ -1,12 +1,332 @@
 export const posts = [
   {
+    slug: 'scalable-angular-project-structure',
+    title: 'How to Build a Scalable Angular Project Structure (Best Practices)',
+    metaTitle: 'Scalable Angular Project Structure: Best Practices 2026',
+    excerpt:
+      "How I structure Angular projects for scale — feature-first folders, standalone components, lazy loading, and service layers that actually stay clean.",
+    date: '2026-05-22',
+    readingTime: '12 min read',
+    category: 'Frontend Engineering',
+    tags: ['Angular', 'Architecture', 'Frontend', 'Best Practices'],
+    image: '/og-image.png',
+    author: 'Nikhil Khot',
+    content: [
+      {
+        type: 'p',
+        text: "I've inherited enough poorly structured Angular codebases to know that the architecture decisions made in week one compound for years. An app that starts with a flat component folder and services scattered everywhere doesn't stay small — it grows, and every new engineer adds their own interpretation of where things belong. By month six you have a 30,000-line codebase with no consistent pattern and a team that dreads touching unfamiliar areas.",
+      },
+      {
+        type: 'p',
+        text: "I've also built Angular apps from scratch that are still clean after three years and four engineers. The difference wasn't talent — it was the structure decisions made before the first feature shipped. This post covers the ones that actually matter.",
+      },
+      {
+        type: 'h2',
+        text: 'Why structure matters more in Angular than in most frameworks',
+      },
+      {
+        type: 'p',
+        text: "Angular is opinionated about the primitives — components, services, directives, pipes — but it doesn't enforce how you organize them across a real project. That freedom is a trap for new teams. React apps suffer from the same problem, but Angular apps tend to grow larger and live longer, which means the structural debt compounds harder.",
+      },
+      {
+        type: 'p',
+        text: "The goal of a good Angular project structure is simple: a developer who has never seen the codebase should be able to open the folder tree and find the code they need in under 30 seconds. If that's not true for your current app, you have a structure problem.",
+      },
+      {
+        type: 'h2',
+        text: 'The folder structure mistake most teams make',
+      },
+      {
+        type: 'p',
+        text: "The most common mistake is organizing by type — all components in one folder, all services in another, all models in a third. It looks clean when the app has ten files. By the time it has three hundred, finding the service that belongs to a specific feature requires cross-referencing three separate directories.",
+      },
+      {
+        type: 'p',
+        text: "The fix is organizing by feature instead. Each feature is a self-contained folder with its own components, services, models, and routes. You open one folder and find everything the feature touches. This is sometimes called a domain-driven structure, and it's what every large Angular codebase I've seen evolve toward — usually after someone has already paid the cost of not doing it early.",
+      },
+      {
+        type: 'h2',
+        text: 'A feature-first folder layout that scales',
+      },
+      {
+        type: 'p',
+        text: "Here's the structure I use as a starting point on every new Angular project:",
+      },
+      {
+        type: 'ul',
+        items: [
+          '**`src/app/core/`** — singleton services that live for the life of the app: auth, HTTP interceptors, error handling, analytics. Imported once in `AppComponent` or via `provideX()` calls. Nothing in `core/` should be feature-specific.',
+          '**`src/app/shared/`** — components, directives, and pipes used by more than one feature. A `DatePipe` wrapper, a `LoadingSpinnerComponent`, a `ConfirmDialogComponent`. The rule: if only one feature uses it, it lives in that feature folder, not here.',
+          '**`src/app/features/`** — one subfolder per domain: `features/dashboard/`, `features/appointments/`, `features/billing/`. Each feature folder owns its routes, its components, its services, and its models.',
+          '**`src/app/layout/`** — shell components: `NavbarComponent`, `SidebarComponent`, `FooterComponent`. These are not features — they are infrastructure for rendering features.',
+          '**`src/environments/`** — environment files (`environment.ts`, `environment.prod.ts`). No API keys or secrets — only feature flags, base URLs, and config switches.',
+        ],
+      },
+      {
+        type: 'p',
+        text: "Inside a feature folder like `features/appointments/`, the structure mirrors the same pattern at a smaller scale: `components/`, `services/`, `models/`, `appointments.routes.ts`. The feature is a world unto itself. You can move it, delete it, or hand it to a different team without touching anything outside the folder.",
+      },
+      {
+        type: 'h2',
+        text: 'Standalone components in 2026',
+      },
+      {
+        type: 'p',
+        text: "If you are starting a new Angular project today, use standalone components everywhere. NgModules are effectively legacy — Angular's tooling, documentation, and community have moved on. Standalone components declare their own imports, which means no module boundary hunting when you add a new dependency.",
+      },
+      {
+        type: 'p',
+        text: "The shift also changes how you think about `shared/`. With NgModules, shared components were bundled into a `SharedModule` that you imported into every feature module. With standalone components, each component imports exactly what it needs. The `SharedModule` god-object goes away, and tree-shaking actually works.",
+      },
+      {
+        type: 'ul',
+        items: [
+          "**Don't create a `SharedModule`** — it becomes a dumping ground and breaks tree-shaking. Export standalone components individually instead.",
+          '**Use `provideX()` functions** instead of `forRoot()` patterns for services. Cleaner, more explicit, and easier to test.',
+          '**Lazy-load feature routes** as route-level standalone components — Angular\'s router handles this cleanly without any module ceremony.',
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Core services: the stuff that has to exist once',
+      },
+      {
+        type: 'p',
+        text: "The services in `core/` aren't numerous — but they're the ones every other service in the app depends on. Getting them wrong early means a refactor that touches everywhere.",
+      },
+      {
+        type: 'h3',
+        text: 'AuthService and HTTP interceptors',
+      },
+      {
+        type: 'p',
+        text: "Your `AuthService` belongs in `core/`. It manages the session, refreshes tokens, and exposes observables other services can subscribe to. Every HTTP interceptor — auth header injection, error handling, loading state — lives next to it in `core/interceptors/`. Register them once in `app.config.ts` with `provideHttpClient(withInterceptors([...]))` and never touch that config again.",
+      },
+      {
+        type: 'h3',
+        text: 'Error handling',
+      },
+      {
+        type: 'p',
+        text: "A global error handler in `core/` that catches unhandled errors and sends them to your monitoring service (Sentry, Datadog, whatever) is non-negotiable. Don't scatter `try/catch` blocks through your feature services hoping you'll catch everything. One `ErrorHandler` override, registered in `app.config.ts`, and you have a single place to evolve your error strategy.",
+      },
+      {
+        type: 'h2',
+        text: 'Lazy loading: the strategy that determines your bundle size',
+      },
+      {
+        type: 'p',
+        text: "Every feature in `features/` should be lazy-loaded. Angular's router makes this straightforward — point a route to `() => import('./features/appointments/appointments.routes')` and the browser won't download that code until the user navigates there. For a mid-sized app, this typically cuts the initial bundle by 40–60%.",
+      },
+      {
+        type: 'p',
+        text: "The mistake I see most often is lazy-loading at the wrong granularity — people create one lazy chunk for the entire app, or they forget to lazy-load at all and wonder why their initial load is slow. The rule I follow: every top-level route should be a lazy boundary. Sub-routes within a feature can be eager.",
+      },
+      {
+        type: 'ul',
+        items: [
+          '**Use `loadChildren` for feature routes** — not `loadComponent`. A single component is rarely the right lazy boundary.',
+          '**Add route-level preloading** with `PreloadAllModules` or a custom preloading strategy once the initial bundle is healthy. This warms the chunks the user is likely to visit next.',
+          '**Check your bundle with `ng build --stats-json`** and open it in `webpack-bundle-analyzer`. Do it before launch, not after a performance complaint.',
+          '**`deferrable views` for heavy components** — Angular 17+ lets you defer a slow component within a page with `@defer`. Use it for charts, rich text editors, and third-party widgets that add weight.',
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'State management: picking the right tool for the job',
+      },
+      {
+        type: 'p',
+        text: "The default answer in Angular interviews is NgRx. It's the right answer for maybe a third of the apps I've seen it in. Here's how I actually decide.",
+      },
+      {
+        type: 'h3',
+        text: 'Start with signals',
+      },
+      {
+        type: 'p',
+        text: "For most new Angular projects in 2026, start with signals. A `signal()` in a service replaces the `BehaviorSubject` pattern most teams default to, with simpler syntax and better change detection integration. Component state that doesn't need to be shared doesn't even need a service — it lives in the component as a signal.",
+      },
+      {
+        type: 'h3',
+        text: 'When to add NgRx',
+      },
+      {
+        type: 'p',
+        text: "NgRx earns its weight when you have complex shared state — multiple components reading the same data slice, optimistic updates that need rollback, or server-side event streams updating multiple parts of the UI simultaneously. Add it when the friction from managing that state manually becomes more painful than the NgRx boilerplate. Don't add it to a new project by default. I've shipped several large enterprise Angular apps without full NgRx — NgRx Component Store is usually enough and cuts the boilerplate by 60%.",
+      },
+      {
+        type: 'h3',
+        text: 'The service with a signal pattern',
+      },
+      {
+        type: 'p',
+        text: "The pattern that covers 80% of state needs: a service that holds a `signal()` (or `WritableSignal`), exposes a `computed()` for derived values, and provides methods that update the signal. Components inject the service and read the signal. No RxJS, no BehaviorSubject, no piping. It's testable, it's readable, and it doesn't require a PhD to understand six months later.",
+      },
+      {
+        type: 'h2',
+        text: 'The service layer: one responsibility per service',
+      },
+      {
+        type: 'p',
+        text: "The worst Angular codebases I've inherited have services that do everything: HTTP calls, business logic, UI state, local storage, and the occasional DOM manipulation. When a service does everything, testing any one thing requires setting up the world.",
+      },
+      {
+        type: 'p',
+        text: "The structure I enforce: one `ApiService` per feature that handles HTTP (raw request/response, nothing else), and one `[Feature]StateService` that handles business logic and state. The component talks to the state service. The state service calls the API service. Nothing crosses those boundaries.",
+      },
+      {
+        type: 'ul',
+        items: [
+          '**`AppointmentsApiService`** — `GET /appointments`, `POST /appointments`, `PATCH /appointments/:id`. Returns typed Observables or Promises. No business logic.',
+          '**`AppointmentsStateService`** — holds signals for the appointments list, loading state, and selected appointment. Calls `AppointmentsApiService` and handles error mapping.',
+          '**`AppointmentListComponent`** — injects `AppointmentsStateService`, reads signals, calls methods. Zero direct HTTP calls.',
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Barrel files: use them carefully',
+      },
+      {
+        type: 'p',
+        text: "Barrel files (`index.ts` that re-export everything from a folder) look elegant but have a real cost. Angular's build tooling in 2026 handles tree-shaking well, but a barrel that re-exports 40 components from a shared folder will force the bundler to evaluate all 40 even when you only need one.",
+      },
+      {
+        type: 'p',
+        text: "My rule: use barrel files at feature boundaries only — one `index.ts` that exports the public API of a feature. Never use them inside a feature to aggregate sub-folders. Direct imports within a feature are always cleaner and build faster.",
+      },
+      {
+        type: 'h2',
+        text: 'Path aliases: eliminate the `../../..` problem',
+      },
+      {
+        type: 'p',
+        text: "Set up TypeScript path aliases in `tsconfig.json` from day one. Relative imports like `../../../../core/auth/auth.service` break when you move a file and obscure the actual dependency structure. Aliases like `@core/auth`, `@shared/components`, and `@features/appointments` are refactoring-proof and tell the reader the import's origin at a glance.",
+      },
+      {
+        type: 'ul',
+        items: [
+          'Add path mappings in `tsconfig.json` under `compilerOptions.paths`.',
+          'Map `@core/*` to `src/app/core/*`, `@shared/*` to `src/app/shared/*`, `@features/*` to `src/app/features/*`.',
+          'Configure the same aliases in `angular.json` under `projects.[name].architect.build.options.tsConfig` — the CLI needs to know about them for the dev server.',
+          'Enforce the pattern with an ESLint rule (`no-relative-import-paths` or a custom rule) so new engineers don\'t drift back to relative paths.',
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Testing structure that actually gets used',
+      },
+      {
+        type: 'p',
+        text: "Co-locate tests next to the files they test — `appointments.service.ts` and `appointments.service.spec.ts` in the same folder. Separate `__tests__` directories create friction that lowers the test rate. When tests live next to the code, engineers write them without thinking about where they go.",
+      },
+      {
+        type: 'p',
+        text: "For component tests, prefer testing behaviour over implementation. Test what renders on screen and what happens when the user interacts, not the internal state of a class. Angular Testing Library is worth adding to every project — it pushes the testing style in the right direction without much ceremony.",
+      },
+      {
+        type: 'h2',
+        text: 'Environment config without the leaks',
+      },
+      {
+        type: 'p',
+        text: "Angular's `environment.ts` files are committed to source control, which means they're the wrong place for anything secret. Use them only for non-secret config: feature flags, base API URLs (not tokens), and environment labels. Secrets belong in CI/CD environment variables, injected at build or deploy time.",
+      },
+      {
+        type: 'p',
+        text: "A pattern I've standardised on: an `AppConfigService` in `core/` that reads `environment.ts` and exposes a typed config object. Components and services inject `AppConfigService`, not `environment` directly. When you need to mock config in tests, you mock the service — not the file.",
+      },
+      {
+        type: 'p',
+        text: "If you're still deciding between Angular and React for the project itself, I covered [the Angular vs React choice in detail](/blog/angular-vs-react-2026) — including how signals, server components, and team scale factor in.",
+      },
+      {
+        type: 'h2',
+        text: 'A checklist before your first PR',
+      },
+      {
+        type: 'p',
+        text: "The decisions that cost the least to make before any code exists are the ones that cost the most to change six months in. These are the ones I enforce on every greenfield Angular project.",
+      },
+      {
+        type: 'ul',
+        items: [
+          '**Feature-first folder structure** in place before writing the first feature component.',
+          '**Standalone components** from the start — no NgModules.',
+          '**Path aliases configured** in `tsconfig.json` and `angular.json`.',
+          '**Lazy-loaded routes** for every top-level feature.',
+          '**Core and shared boundaries defined** — write the rule down, not just in your head.',
+          '**One `ApiService` and one `StateService` per feature** — agree on naming before the first service is created.',
+          '**Signals as the default state primitive** — add NgRx only when signals genuinely stop scaling.',
+          '**ESLint rules that enforce** the structure — auto-fixable rules beat code review comments that say the same thing every week.',
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'FAQ: Angular project structure',
+      },
+      {
+        type: 'faq',
+        items: [
+          {
+            q: 'Should I use NgModules or standalone components in a new Angular project?',
+            a: "Standalone components. NgModules are still supported but Angular's own documentation, schematics, and community have moved to standalone. New projects that start with NgModules will spend time migrating away from them within two years. Standalone components also simplify lazy loading, testing, and tree-shaking.",
+          },
+          {
+            q: 'What is the best state management solution for Angular in 2026?',
+            a: "Start with signals and a service-per-feature pattern. This covers the vast majority of real-world Angular apps without any external library. Add NgRx Component Store when a feature's state gets genuinely complex. Add full NgRx only when you need Redux-style time-travel debugging, cross-feature state coordination, or a large team that needs strict action/reducer discipline.",
+          },
+          {
+            q: 'How should I organise shared components in an Angular project?',
+            a: "In `src/app/shared/`, but with a strict rule: a component only goes in `shared/` when it is used by at least two different features. If a component is used by one feature only, it lives in that feature's folder. This prevents `shared/` from becoming a dumping ground for everything.",
+          },
+          {
+            q: 'How many components should a feature folder have before I split it?',
+            a: "There's no fixed number — I've had feature folders with two components and ones with twenty. The trigger to split is organisational, not numerical: when two sub-teams are owning different parts of the feature and stepping on each other's PRs, it's time to break the feature into sub-features. A feature folder with 20 well-organised components and clear naming is better than an artificial split that creates ambiguous boundaries.",
+          },
+          {
+            q: 'Should I use barrel files (index.ts) in Angular?',
+            a: "Use them at feature boundaries to define the public API of a feature, and nowhere else. A barrel that re-exports everything inside a feature folder creates bundle weight and slows incremental builds. Direct imports within a feature folder are always the right choice.",
+          },
+          {
+            q: 'How do I enforce project structure conventions across a team?',
+            a: "ESLint rules are the most durable enforcement mechanism — they catch violations in CI before they're merged. Write down the structure rules in a short architecture decision record (a one-page doc is fine) and link it from the README. Code review can catch the rest, but if you're leaving the same comment more than twice, write an ESLint rule instead.",
+          },
+          {
+            q: 'When should I add lazy loading in Angular?',
+            a: "From the first feature. Retroactively adding lazy loading to an Angular app that wasn't built for it is painful — routes are often too entangled with shared state and imports. The cost of setting up lazy routes on day one is thirty minutes. The cost of adding it later is a week of careful refactoring.",
+          },
+          {
+            q: 'What is the difference between core and shared in Angular?',
+            a: "`core/` holds singleton services and infrastructure that is instantiated once for the life of the app: auth, HTTP interceptors, error handling, analytics. `shared/` holds reusable UI components, directives, and pipes that are stateless and used across multiple features. The clearest test: if removing it would break the app's ability to run at all, it belongs in `core/`. If it's a UI building block, it belongs in `shared/`.",
+          },
+        ],
+      },
+      {
+        type: 'h2',
+        text: 'Building an Angular app and want a second opinion?',
+      },
+      {
+        type: 'p',
+        text: "If you're starting a new Angular project or cleaning up one that has grown beyond its original structure, I'm available for architecture reviews and short engagements. I've built and scaled Angular apps in telehealth, ed-tech, and enterprise platforms — and I've done the painful work of inheriting ones that weren't structured for growth.",
+      },
+      {
+        type: 'cta',
+        text: 'I take on Angular architecture reviews and short engagements — telehealth, ed-tech, and enterprise. If you are starting fresh or cleaning up a codebase that has outgrown its structure, take a look at the work and reach out.',
+        primary: { href: '/contact', label: 'Get in touch' },
+        secondary: { href: '/projects', label: 'See my work' },
+      },
+    ],
+  },
+  {
     slug: 'angular-vs-react-2026',
     title: 'Angular vs React in 2026: Which One Should You Choose?',
-    metaTitle: 'Angular vs React 2026: Which to Choose',
+    metaTitle: 'Angular vs React in 2026: Which Should You Choose?',
     excerpt:
-      'Angular vs React in 2026 — a senior engineer\'s breakdown of signals, server components, performance, hiring, and the project shapes where each one actually wins.',
+      "Angular vs React in 2026 — a senior engineer's breakdown of signals, server components, performance, and the project shapes where each one wins.",
     date: '2026-05-07',
-    readingTime: '12 min read',
+    readingTime: '9 min read',
+    category: 'Frontend Engineering',
     tags: ['Angular', 'React', 'Frontend', 'Architecture', 'Career'],
     image: '/og-image.png',
     author: 'Nikhil Khot',
@@ -119,6 +439,10 @@ export const posts = [
       {
         type: 'h2',
         text: 'Tooling, structure, and team scale',
+      },
+      {
+        type: 'p',
+        text: "This is where the frameworks diverge most clearly — not in syntax or raw performance, but in how much structure and convention comes included versus how much your team brings.",
       },
       {
         type: 'h3',
@@ -268,7 +592,7 @@ export const posts = [
       },
       {
         type: 'cta',
-        text: 'Skim the work, take a look at the experience, then send a short note about what you are building.',
+        text: "I'm available for architecture calls and framework decisions — Angular vs React, greenfield choices, and migrations. Take a look at the work, then reach out with what you are deciding.",
         primary: { href: '/contact', label: 'Get in touch' },
         secondary: { href: '/projects', label: 'See my work' },
       },
@@ -277,11 +601,12 @@ export const posts = [
   {
     slug: 'hire-angular-developer-india',
     title: 'Hire an Angular Developer in India: What 10+ Years on Live Projects Taught Me',
-    metaTitle: 'Hire Angular Developer India (2026 Guide)',
+    metaTitle: 'Hire an Angular Developer in India (2026 Rates & Guide)',
     excerpt:
-      'Hire an Angular developer in India with confidence. A hands-on 2026 guide covering rates, engagement models, the skills that actually matter, and the hiring mistakes that cost projects months.',
+      'How to hire an Angular developer in India in 2026 — rates, engagement models, the skills that actually matter, and the mistakes that cost projects months.',
     date: '2026-04-21',
-    readingTime: '11 min read',
+    readingTime: '8 min read',
+    category: 'Engineering Leadership',
     tags: ['Angular', 'Hiring', 'India', 'Team', 'Career'],
     image: '/og-image.png',
     author: 'Nikhil Khot',
@@ -450,7 +775,7 @@ export const posts = [
       },
       {
         type: 'p',
-        text: 'A few patterns I see every single year:',
+        text: "A few patterns I see every single year. If you're also still deciding whether Angular is the right framework for the project, I covered [Angular vs React in 2026](/blog/angular-vs-react-2026) separately — that decision shapes who you need to hire.",
       },
       {
         type: 'ul',
@@ -509,7 +834,7 @@ export const posts = [
       },
       {
         type: 'cta',
-        text: 'Have a look at the work, skim the experience, then send a short note about what you are building.',
+        text: 'I help teams hire and structure Angular engineering — technical interview design, code standards, and team architecture across telehealth, ed-tech, and enterprise. Take a look at the experience, then reach out.',
         primary: { href: '/contact', label: 'Get in touch' },
         secondary: { href: '/projects', label: 'See my work' },
       },
@@ -520,10 +845,11 @@ export const posts = [
     title: 'How I cut API response times by 40%',
     metaTitle: 'Cut API Response Times by 40% — MySQL & PHP Performance',
     excerpt:
-      'A practical walkthrough of MySQL slow query logging, composite indexing, N+1 fixes, connection pooling, and PHP service-layer cleanup that took a telehealth API from 1.4 s p95 to under 800 ms.',
+      'How I cut API response times by 40% — MySQL indexing, N+1 fixes, connection pooling, and PHP service-layer cleanup on a live telehealth API.',
     date: '2026-02-12',
     updated: '2026-03-04',
-    readingTime: '10 min read',
+    readingTime: '6 min read',
+    category: 'Backend Engineering',
     tags: ['MySQL', 'Performance', 'PHP', 'Backend'],
     image: '/og-image.png',
     author: 'Nikhil Khot',
@@ -655,7 +981,7 @@ export const posts = [
       },
       {
         type: 'p',
-        text: "I'd set up slow query logging and endpoint-level latency tracking on day one. Half the work here was finding the problems, not fixing them. In a fresh project I'd also enforce a `SELECT *` ban from the start — most of the heaviest queries were selecting 20 columns when they needed 3.",
+        text: "I'd set up slow query logging and endpoint-level latency tracking on day one. Half the work here was finding the problems, not fixing them. In a fresh project I'd also enforce a `SELECT *` ban from the start — most of the heaviest queries were selecting 20 columns when they needed 3. If the API you're optimising handles patient data, there are [HIPAA constraints around caching and audit logging](/blog/hipaa-for-engineers-who-never-asked-for-it) worth knowing before you reach for Redis.",
       },
       {
         type: 'h2',
@@ -696,7 +1022,7 @@ export const posts = [
       },
       {
         type: 'cta',
-        text: 'Take a look at the work, then reach out with what you are trying to fix.',
+        text: 'I do backend performance audits across PHP, Node.js, and MySQL — slow query analysis, N+1 elimination, connection pooling, and service-layer cleanup. Take a look at the work, then reach out with what you are trying to fix.',
         primary: { href: '/contact', label: 'Get in touch' },
         secondary: { href: '/projects', label: 'See my work' },
       },
@@ -707,9 +1033,10 @@ export const posts = [
     title: 'Leading a team without losing your hands',
     metaTitle: 'Leading an Engineering Team Without Losing Technical Edge',
     excerpt:
-      'Notes from two years of running a team of five: how I balance code reviews, architecture calls, 1:1s, delegation, and keeping my own IDE warm without becoming a meeting-only manager.',
+      'Two years leading an engineering team of five — balancing code reviews, 1:1s, delegation, and staying hands-on without becoming a meeting-only manager.',
     date: '2026-01-20',
-    readingTime: '9 min read',
+    readingTime: '6 min read',
+    category: 'Engineering Leadership',
     tags: ['Leadership', 'Team', 'Career'],
     image: '/og-image.png',
     author: 'Nikhil Khot',
@@ -785,7 +1112,7 @@ export const posts = [
       },
       {
         type: 'p',
-        text: "I protect three things: I read every non-trivial PR, even the ones I'm not formally reviewing. I write the first version of any new service or module. And I keep one small self-contained ticket in every sprint that I ship myself. It takes 4–6 hours a week, but it keeps the signal alive.",
+        text: "I protect three things: I read every non-trivial PR, even the ones I'm not formally reviewing. I write the first version of any new service or module. And I keep one small self-contained ticket in every sprint that I ship myself. It takes 4–6 hours a week, but it keeps the signal alive. One concrete thing I shipped during this period while staying out of the feature work was [cutting our telehealth API response times by 40%](/blog/cutting-api-response-times-by-40-percent) — that's the kind of work that's high leverage and contained enough to not pull you into a feature dependency.",
       },
       {
         type: 'h2',
@@ -854,7 +1181,7 @@ export const posts = [
       },
       {
         type: 'cta',
-        text: 'Take a look at the experience, then reach out about what you are building.',
+        text: 'I work with engineering teams on structure, delegation, and technical standards — from first-time leads to engineering managers scaling a department. Take a look at the experience, then reach out.',
         primary: { href: '/contact', label: 'Get in touch' },
         secondary: { href: '/about', label: 'My experience' },
       },
@@ -863,11 +1190,12 @@ export const posts = [
   {
     slug: 'hipaa-for-engineers-who-never-asked-for-it',
     title: 'HIPAA for engineers who never asked for it',
-    metaTitle: 'HIPAA for Engineers: A Practical 2026 Checklist',
+    metaTitle: 'HIPAA for Engineers: Practical 2026 Compliance Checklist',
     excerpt:
-      "A practical guide for the engineer who just found out their feature is going into a HIPAA-regulated product. PHI classification, encryption, audit logs, BAAs, and breach notification — the parts that actually affect your code.",
+      "HIPAA for engineers who didn't ask for it — PHI classification, encryption, audit logs, and breach notification focused on what actually affects your code.",
     date: '2025-12-08',
-    readingTime: '12 min read',
+    readingTime: '8 min read',
+    category: 'Healthcare & Compliance',
     tags: ['HIPAA', 'Security', 'Healthcare', 'Compliance'],
     image: '/og-image.png',
     author: 'Nikhil Khot',
@@ -1010,6 +1338,10 @@ export const posts = [
         text: "The HIPAA engineer's practical checklist",
       },
       {
+        type: 'p',
+        text: "Before any code is written in a regulated product, run through this list. Every item represents a gap I've seen cause real compliance problems in production healthcare systems. The encryption and audit requirements here also affect database performance in ways that aren't obvious — I covered [MySQL and PHP performance in a telehealth context](/blog/cutting-api-response-times-by-40-percent) separately.",
+      },
+      {
         type: 'ul',
         items: [
           '**Classify all data:** decide before you write a line of code which fields are PHI and document it.',
@@ -1065,7 +1397,7 @@ export const posts = [
       },
       {
         type: 'cta',
-        text: 'Take a look at the experience, then get in touch with what you are working on.',
+        text: "If your team is entering a HIPAA-regulated space for the first time — or inherited a codebase you're not sure is compliant — I've done this work hands-on at a telehealth company. Take a look at the experience, then reach out.",
         primary: { href: '/contact', label: 'Get in touch' },
         secondary: { href: '/about', label: 'My background' },
       },

@@ -42,7 +42,7 @@ function formatDate(iso) {
 }
 
 function renderInline(text) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g)
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g)
   return parts.map((part, i) => {
     if (!part) return null
     if (part.startsWith('**') && part.endsWith('**')) {
@@ -60,6 +60,18 @@ function renderInline(text) {
         >
           {part.slice(1, -1)}
         </code>
+      )
+    }
+    const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/)
+    if (linkMatch) {
+      return (
+        <Link
+          key={i}
+          href={linkMatch[2]}
+          className="text-accent-cyan underline underline-offset-2 transition-colors hover:text-white"
+        >
+          {linkMatch[1]}
+        </Link>
       )
     }
     return <span key={i}>{part}</span>
