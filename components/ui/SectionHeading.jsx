@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { cn } from '@/lib/cn'
 
 export default function SectionHeading({ eyebrow, title, description, align = 'left' }) {

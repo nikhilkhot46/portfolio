@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Code2, Users, Gauge, ShieldCheck } from 'lucide-react'
 import SectionHeading from './ui/SectionHeading'
 import GlassCard from './ui/GlassCard'

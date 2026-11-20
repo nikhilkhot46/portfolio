@@ -4,6 +4,7 @@ export default function JsonLd({ data, id }) {
       type="application/ld+json"
       id={id}
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      suppressHydrationWarning
     />
   )
 }

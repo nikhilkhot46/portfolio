@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { ArrowUpRight, Sparkles } from 'lucide-react'
 import SectionHeading from './ui/SectionHeading'
 import { projects } from '@/data/resume'

@@ -103,19 +103,20 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} dark`}>
-      <head>
+      <head suppressHydrationWarning>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-        <JsonLd data={personSchema()} id="person-schema" />
-        <JsonLd data={websiteSchema()} id="website-schema" />
         {/* Google AdSense */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7363717584814174"
           crossOrigin="anonymous"
+          suppressHydrationWarning
         />
       </head>
       <body className="bg-ink-950 text-white antialiased">
+        <JsonLd data={personSchema()} id="person-schema" />
+        <JsonLd data={websiteSchema()} id="website-schema" />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink-950"

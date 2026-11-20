@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from '@/components/Link'
-import { useInView, useMotionValue, animate } from 'framer-motion'
-import { ArrowRight, Briefcase, Clock, Download, Github, Globe, Linkedin, Mail, MapPin, Sparkles } from 'lucide-react'
+import { useInView, useMotionValue, animate } from 'motion/react'
+import { ArrowRight, Briefcase, Clock, Download, Globe, Mail, MapPin, Sparkles } from 'lucide-react'
+import { Github, Linkedin } from '@/components/Icons'
 import AuroraBackground from './ui/AuroraBackground'
 import { profile } from '@/data/resume'
 

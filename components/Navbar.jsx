@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from '@/components/Link'
 import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Download, Menu, X } from 'lucide-react'
 import { navLinks, profile } from '@/data/resume'
 import { cn } from '@/lib/cn'

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Linkedin, Github, Send, Check, Download, FileText } from 'lucide-react'
+import { motion } from 'motion/react'
+import { Mail, Phone, MapPin, Send, Check, Download, FileText } from 'lucide-react'
+import { Github, Linkedin } from '@/components/Icons'
 import SectionHeading from './ui/SectionHeading'
 import GlassCard from './ui/GlassCard'
 import { profile } from '@/data/resume'

@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 const phone = '919890422071'
 const message = "Hi Nikhil, I came across your portfolio and I'd like to connect with you."
