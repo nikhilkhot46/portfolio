@@ -39,7 +39,7 @@ Rsync `out/` to EC2 at `/var/www/html/nikhilkhot/`. TLS via Let's Encrypt, serve
 ## Project structure
 
 ```
-myweb/
+portfolio/
 ├── app/
 │   ├── layout.jsx              # Root layout, fonts, Analytics
 │   ├── page.jsx                # / — Hero + Achievements

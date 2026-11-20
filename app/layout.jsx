@@ -108,6 +108,12 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <JsonLd data={personSchema()} id="person-schema" />
         <JsonLd data={websiteSchema()} id="website-schema" />
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7363717584814174"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="bg-ink-950 text-white antialiased">
         <a
